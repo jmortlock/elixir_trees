@@ -12,10 +12,7 @@ defmodule Trees.List do
   def children_of_node(node, list, acc \\ [])
   def children_of_node(node, list, acc) do
     children = find_children(node, list)
-
-    acc = acc ++ children
-    Enum.reduce(children, acc, fn(x, accc) -> accc ++ children_of_node(x, list) end)
-      |> compact
+    List.foldl(children, acc ++ children, fn(x, accc) -> accc ++ children_of_node(x, list) end)
   end
 
   defp find_children(node, list) do
