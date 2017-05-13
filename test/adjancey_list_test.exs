@@ -40,4 +40,15 @@ defmodule TreesTest do
     children = Trees.AdjancencyList.descendants(root_node, list)
     assert children == [Enum.at(list_b, 1)]
   end
+
+  test "siblings of root node", context do
+    list = context[:list_a] ++ context[:list_b]
+
+    list_a_root = List.first(context[:list_a])
+    list_b_root = List.first(context[:list_b])
+
+    siblings = Trees.AdjancencyList.siblings(list_a_root, list)
+    assert siblings == [list_b_root]
+
+  end
 end

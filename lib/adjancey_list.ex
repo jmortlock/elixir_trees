@@ -11,12 +11,20 @@ defmodule Trees.AdjancencyList do
 
   def descendants(node, list, acc \\ [])
   def descendants(node, list, acc) do
-    children = find_children(node, list)
+    children = children(node, list)
     List.foldl(children, Enum.into(acc, children), fn(x, accc) -> descendants(x, list, accc) end)
     |> Enum.reverse
   end
 
-  defp find_children(node, list) do
+  def siblings(%{parent_id: parent_id}  = node, list) when is_nil(parent_id) do
+    find_roots(list) -- [node]
+  end
+
+  def siblings(node, list) do
+    children(node, list)
+  end
+
+  defp children(node, list) do
     Enum.filter(list, &(&1.parent_id == node.id))
   end
 
