@@ -24,6 +24,10 @@ defmodule Trees.AdjancencyList do
     children(node, list)
   end
 
+  def generations(list) do
+    Enum.group_by(list, fn(x) -> tree_level(x, list) end)
+  end
+
   def tree_level(node, list) do
     ascendants(node, list) |> Enum.count
   end

@@ -62,6 +62,12 @@ defmodule TreesTest do
     list = context[:list_a]
     node = Enum.at(list, 1)
     assert Trees.AdjancencyList.tree_level(node, list) == 1
+  end
 
+  test "generations", context do
+    list = context[:list_a]
+    generations = Trees.AdjancencyList.generations(list)
+    expected = %{0 => [Enum.at(list, 0)], 1 => [Enum.at(list, 1)], 2 => [Enum.at(list, 2)]}
+    assert generations == expected
   end
 end
