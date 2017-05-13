@@ -23,14 +23,21 @@ defmodule TreesTest do
     list = context[:list_a]
     root_node = List.first(list)
     children = Trees.AdjancencyList.descendants(root_node, list)
-    assert children == [Enum.at(list, 1)] ++ [Enum.at(list, 2)]
+    assert children == Enum.slice(list, 1, 2)
   end
 
   test "can traverse parents", context do
     list = context[:list_a]
     child_node = List.last(list)
     parents = Trees.AdjancencyList.ascendants(child_node, list)
-    assert parents == [Enum.at(list, 1)] ++ [Enum.at(list, 0)]
+    assert parents == Enum.slice(list, 0, 2) |> Enum.reverse
+  end
+
+  test "self and ascendants", context do
+    list = context[:list_a]
+    child_node = List.last(list)
+    parents = Trees.AdjancencyList.self_and_ascendants(child_node, list)
+    assert parents == Enum.reverse(list)
   end
 
   test "can_handle multiple trees", context do

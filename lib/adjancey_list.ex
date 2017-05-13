@@ -9,6 +9,10 @@ defmodule Trees.AdjancencyList do
     ascendants(parent, list, [parent | acc])
   end
 
+  def self_and_ascendants(node, list) do
+    ascendants(node, list, [node])
+  end
+
   def descendants(node, list, acc \\ [])
   def descendants(node, list, acc) do
     children = children(node, list)
