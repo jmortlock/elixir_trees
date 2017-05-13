@@ -24,6 +24,10 @@ defmodule Trees.AdjancencyList do
     children(node, list)
   end
 
+  def tree_level(node, list) do
+    ascendants(node, list) |> Enum.count
+  end
+
   defp children(node, list) do
     Enum.filter(list, &(&1.parent_id == node.id))
   end

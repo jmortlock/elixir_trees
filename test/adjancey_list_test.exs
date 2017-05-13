@@ -49,6 +49,19 @@ defmodule TreesTest do
 
     siblings = Trees.AdjancencyList.siblings(list_a_root, list)
     assert siblings == [list_b_root]
+  end
+
+  test "siblings of non-root node", context do
+    list = context[:list_a]
+    node = Enum.at(list, 1)
+    siblings = Trees.AdjancencyList.siblings(node, list)
+    assert siblings == [List.last(list)]
+  end
+
+  test "tree level", context do
+    list = context[:list_a]
+    node = Enum.at(list, 1)
+    assert Trees.AdjancencyList.tree_level(node, list) == 1
 
   end
 end
