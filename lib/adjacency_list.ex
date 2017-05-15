@@ -1,5 +1,4 @@
 defmodule Trees.AdjacencyList do
-
   def walk_tree(mode \\ :dfs, tree, start \\ nil, visit \\ fn(x) -> x end)
   def walk_tree(:bfs, tree, start, visit) do
     walk_tree_bfs(tree, visit, start)
@@ -47,7 +46,7 @@ defmodule Trees.AdjacencyList do
   end
 
   def leaf?(node, tree) do
-    children(node, tree) |> Enum.any?
+    children(node, tree) |> Enum.empty?
   end
 
   def root?(%{parent_id: parent_id}) when is_nil(parent_id), do: true
@@ -102,7 +101,7 @@ defmodule Trees.AdjacencyList do
   def walk_nodes_dfs(tree, nodes, visit, acc) do
     Enum.reduce(nodes, acc, fn(child, accc) ->
       if visit.(child) do
-        walk_nodes_dfs(tree, children(child, tree),  visit, [child | accc])
+        walk_nodes_dfs(tree, children(child, tree), visit, [child | accc])
       else
         accc
       end
