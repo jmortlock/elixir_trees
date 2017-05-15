@@ -13,15 +13,14 @@ defmodule TreesTest do
         %{id: 4, parent_id: 3 }
       ],
       list_c: [
-        %{id: 1, parent_id: nil, name: "2"},
-        %{id: 2, parent_id: 1, name: "7"},
-        %{id: 3, parent_id: 1, name: "5"},
-        %{id: 4, parent_id: 2, name: "2"},
-        %{id: 5, parent_id: 2, name: "6"},
-        %{id: 6, parent_id: 3, name: "9"},
-        %{id: 7, parent_id: 5, name: "5"},
-        %{id: 8, parent_id: 5, name: "11"},
-        %{id: 9, parent_id: 6, name: "4"},
+        %{id: 1, parent_id: nil, name: "a"},
+        %{id: 2, parent_id: 1, name: "b"},
+        %{id: 3, parent_id: 1, name: "c"},
+        %{id: 4, parent_id: 2, name: "d"},
+        %{id: 5, parent_id: 2, name: "e"},
+        %{id: 6, parent_id: 3, name: "f"},
+        %{id: 7, parent_id: 3, name: "g"},
+        %{id: 8, parent_id: 5, name: "h"},
 
       ],
     ]
@@ -33,12 +32,12 @@ defmodule TreesTest do
 
   test "dfs", context do
     list = context[:list_c]
-  #  Trees.AdjancencyList.walk_tree_dfs(list, fn(x, level) -> IO.puts~s(#{x.name} - level #{level}) end)
+    Trees.AdjancencyList.walk_tree(list, fn(x, level) -> IO.puts~s(#{x.name} - level #{level}) end)
   end
 
   test "bfs", context do
     list = context[:list_c]
-    Trees.AdjancencyList.walk_tree_bfs(list, fn(x, level) -> IO.puts~s(#{x.name} - level #{level}) end)
+  #  Trees.AdjancencyList.walk_tree(:bfs, list, fn(x, level) -> IO.puts~s(#{x.name} - level #{level}) end)
   end
 
   test "can traverse children", context do
