@@ -1,5 +1,6 @@
 defmodule TreesTest do
   use ExUnit.Case
+  import Trees.AdjacencyList
 
   setup do
     [
@@ -10,7 +11,7 @@ defmodule TreesTest do
       ],
       tree_b: [
         %{id: 3, parent_id: nil},
-        %{id: 4, parent_id: 3 }
+        %{id: 4, parent_id: 3}
       ],
       tree_c: [
         %{id: 1, parent_id: nil, name: "a"},
@@ -30,99 +31,110 @@ defmodule TreesTest do
   end
 
   test "dfs from given node", context do
-    list = context[:tree_c]
-    start = Enum.at(list, 2)
-    dfs = Trees.AdjacencyList.walk_tree(:dfs, list, start) |> Enum.map(& &1.name)
+    tree = context[:tree_c]
+    start = Enum.at(tree, 2)
+    dfs = walk_tree(:dfs, tree, start) |> Enum.map(& &1.name)
     assert dfs == ["c", "f", "g"]
   end
 
   test "dfs from start", context do
-    list = context[:tree_c]
-    dfs = Trees.AdjacencyList.walk_tree(:dfs, list) |> Enum.map(& &1.name)
+    dfs = context[:tree_c] |> walk_tree |> Enum.map(& &1.name)
     assert dfs == ["a", "b", "d", "e", "h", "c", "f", "g"]
   end
 
   test "bfs", context do
-    list = context[:tree_c]
-    bfs = Trees.AdjacencyList.walk_tree(:bfs, list) |> Enum.map(& &1.name)
+    tree = context[:tree_c]
+    bfs = walk_tree(:bfs, tree) |> Enum.map(& &1.name)
     assert bfs == ["a", "b", "c", "d", "e", "f", "g", "h"]
   end
 
   test "bfs with filter", context do
-    list = context[:tree_c]
-    bfs = Trees.AdjacencyList.walk_tree(:bfs, list, nil, fn(x) -> x.name == "a" end) |> Enum.map(& &1.name)
+    tree = context[:tree_c]
+    bfs = walk_tree(:bfs, tree, nil, fn(x) -> x.name == "a" end) |> Enum.map(& &1.name)
     assert bfs == ["a"]
   end
 
   test "dfs with filter", context do
-    list = context[:tree_c]
-    dfs = Trees.AdjacencyList.walk_tree(:dfs, list, nil, fn(x) -> x.name != "b" end) |> Enum.map(& &1.name)
+    tree = context[:tree_c]
+    dfs = walk_tree(:dfs, tree, nil, fn(x) -> x.name != "b" end) |> Enum.map(& &1.name)
     assert dfs == ["a", "c", "f", "g" ]
   end
 
   test "dfs with start node filterd", context do
-    list = context[:tree_c]
-    start = List.first(list)
-    dfs = Trees.AdjacencyList.walk_tree(:dfs, list, start, fn(x) -> x.name != start.name end) |> Enum.map(& &1.name)
+    tree = context[:tree_c]
+    start = List.first(tree)
+    dfs = walk_tree(:dfs, tree, start, fn(x) -> x.name != start.name end) |> Enum.map(& &1.name)
     assert dfs == []
   end
 
-  test "can traverse children", context do
-    list = context[:tree_a]
-    root_node = List.first(list)
-    children = Trees.AdjacencyList.descendants(root_node, list)
-    assert children == Enum.slice(list, 1, 2)
+  test "can traverse descendants", context do
+    tree = context[:tree_a]
+    children = tree |> List.first |> descendants(tree)
+    assert children == Enum.slice(tree, 1, 2)
   end
 
-  test "can traverse parents", context do
-    list = context[:tree_a]
-    child_node = List.last(list)
-    parents = Trees.AdjacencyList.ascendants(child_node, list)
-    assert parents == Enum.slice(list, 0, 2) |> Enum.reverse
+  test "can traverse ascendants", context do
+    tree = context[:tree_a]
+    parents = tree |> List.last |> ascendants(tree)
+    assert parents == Enum.slice(tree, 0, 2) |> Enum.reverse
   end
 
   test "self and ascendants", context do
-    list = context[:tree_a]
-    child_node = List.last(list)
-    parents = Trees.AdjacencyList.self_and_ascendants(child_node, list)
-    assert parents == Enum.reverse(list)
+    tree = context[:tree_a]
+    parents = tree |> List.last |> self_and_ascendants(tree)
+    assert parents == Enum.reverse(tree)
   end
 
   test "can_handle multiple trees", context do
-    list = context[:tree_a] ++ context[:tree_b]
+    tree = context[:tree_a] ++ context[:tree_b]
     tree_b = context[:tree_b]
-    root_node = List.first(context[:tree_b])
-    children = Trees.AdjacencyList.descendants(root_node, list)
+    children = tree_b |> List.first |> descendants(tree)
     assert children == [Enum.at(tree_b, 1)]
   end
 
+  test "roots", context do
+    tree = context[:tree_a] ++ context[:tree_b]
+    roots = [List.first(context[:tree_a])] ++ [List.first(context[:tree_b])]
+    assert roots(tree) == roots
+  end
+
+  test "root?", context do
+    tree = context[:tree_b]
+    assert tree |> List.first |> root? == true
+    assert tree |> List.last |> root? == false
+  end
+
+  test "leaf?", context do
+    tree = context[:tree_b]
+    assert tree |> List.first |> leaf?(tree) == false
+    assert tree |> List.last |> leaf?(tree) == true
+  end
+
   test "siblings of root node", context do
-    list = context[:tree_a] ++ context[:tree_b]
+    tree = context[:tree_a] ++ context[:tree_b]
 
-    tree_a_root = List.first(context[:tree_a])
-    tree_b_root = List.first(context[:tree_b])
+    tree_a_root = context[:tree_a] |> List.first
+    tree_b_root = context[:tree_b] |> List.first
 
-    siblings = Trees.AdjacencyList.siblings(tree_a_root, list)
+    siblings = siblings(tree_a_root, tree)
     assert siblings == [tree_b_root]
   end
 
   test "siblings of non-root node", context do
-    list = context[:tree_a]
-    node = Enum.at(list, 1)
-    siblings = Trees.AdjacencyList.siblings(node, list)
-    assert siblings == [List.last(list)]
+    tree = context[:tree_a]
+    siblings = tree |> Enum.at(1) |> siblings(tree)
+    assert siblings == [List.last(tree)]
   end
 
   test "tree level", context do
-    list = context[:tree_a]
-    node = Enum.at(list, 1)
-    assert Trees.AdjacencyList.tree_level(node, list) == 1
+    tree = context[:tree_a]
+    assert tree |> Enum.at(1) |> tree_level(tree) == 1
   end
 
   test "generations", context do
-    list = context[:tree_a]
-    generations = Trees.AdjacencyList.generations(list)
-    expected = %{0 => [Enum.at(list, 0)], 1 => [Enum.at(list, 1)], 2 => [Enum.at(list, 2)]}
+    tree = context[:tree_a]
+    generations = generations(tree)
+    expected = %{0 => [Enum.at(tree, 0)], 1 => [Enum.at(tree, 1)], 2 => [Enum.at(tree, 2)]}
     assert generations == expected
   end
 end
