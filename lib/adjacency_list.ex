@@ -1,4 +1,4 @@
-defmodule Trees.AdjancencyList do
+defmodule Trees.AdjacencyList do
 
   def walk_tree(mode \\ :dfs, tree, start \\ nil, visit \\ fn(x) -> x end)
   def walk_tree(:bfs, tree, start, visit) do
