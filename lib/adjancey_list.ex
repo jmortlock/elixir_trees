@@ -69,43 +69,42 @@ defmodule Trees.AdjancencyList do
     Enum.reject(list, &(is_nil(&1)))
   end
 
+  defp walk_tree_bfs(list, visit, nil) do
+    walk_nodes_bfs(list, roots(list), visit)
+  end
 
-    defp walk_tree_bfs(list, visit, nil) do
-      walk_nodes_bfs(list, roots(list), visit)
-    end
+  defp walk_tree_bfs(list, visit, node) do
+    walk_nodes_bfs(list, children(node, list), visit)
+  end
 
-    defp walk_tree_bfs(list, visit, node) do
-      walk_nodes_bfs(list, children(node, list), visit)
-    end
-
-    defp walk_nodes_bfs(list, nodes, visit, level \\ 0)
-    defp walk_nodes_bfs(_, [], _, _), do: nil
-    defp walk_nodes_bfs(list, nodes, visit, level) do
-      nodes_to_walk = Enum.map(nodes,
-        fn(child) ->
-          visit.(child, level)
-          children(child, list)
-        end)
-      |> List.flatten
-
-      walk_nodes_bfs(list, nodes_to_walk, visit, level + 1)
-    end
-
-    defp walk_tree_dfs(list, visit, nil) do
-      walk_nodes_dfs(list, roots(list), visit)
-    end
-
-    defp walk_tree_dfs(list, visit, start) do
-      visit.(start, 0)
-      walk_nodes_dfs(list, children(start, list), visit, 1)
-    end
-
-    def walk_nodes_dfs(list, nodes, visit, level \\ 0)
-    def walk_nodes_dfs(_, [], _, _), do: nil
-    def walk_nodes_dfs(list, nodes, visit, level) do
-      Enum.each(nodes, fn(child) ->
+  defp walk_nodes_bfs(list, nodes, visit, level \\ 0)
+  defp walk_nodes_bfs(_, [], _, _), do: nil
+  defp walk_nodes_bfs(list, nodes, visit, level) do
+    nodes_to_walk = Enum.map(nodes,
+      fn(child) ->
         visit.(child, level)
-        walk_nodes_dfs(list, children(child, list), visit, level + 1)
+        children(child, list)
       end)
-    end
+    |> List.flatten
+
+    walk_nodes_bfs(list, nodes_to_walk, visit, level + 1)
+  end
+
+  defp walk_tree_dfs(list, visit, nil) do
+    walk_nodes_dfs(list, roots(list), visit)
+  end
+
+  defp walk_tree_dfs(list, visit, start) do
+    visit.(start, 0)
+    walk_nodes_dfs(list, children(start, list), visit, 1)
+  end
+
+  def walk_nodes_dfs(list, nodes, visit, level \\ 0)
+  def walk_nodes_dfs(_, [], _, _), do: nil
+  def walk_nodes_dfs(list, nodes, visit, level) do
+    Enum.each(nodes, fn(child) ->
+      visit.(child, level)
+      walk_nodes_dfs(list, children(child, list), visit, level + 1)
+    end)
+  end
 end
