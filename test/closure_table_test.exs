@@ -35,14 +35,22 @@ defmodule ClosureTableTest do
     assert table == expected_table
   end
 
-  test "closure table traversal from root", context do
-    table = context[:tree_a] |> from_adjacency_list
-    # children of root
-    children_of_root = table
-                       |> Enum.filter(fn(x) -> x.level != 0 && x.ancestor.id == 1 end)
-                       |> Enum.map(& &1.descendant.name)
-                       |> Enum.reverse
+  test "descendants", context do
+    tree = context[:tree_a]
+    table = tree |> from_adjacency_list
+    root  = tree |> Enum.at(0)
 
-   assert children_of_root == ["b", "c", "d", "e", "f", "g", "h"]
+    descendants = table |> descendants(root) |> Enum.map(& &1.descendant.name)
+    assert descendants == ["b", "c", "d", "e", "f", "g", "h"]
   end
+
+  test "ascendants", context do
+    tree = context[:tree_a]
+    table = tree |> from_adjacency_list
+    leaf  = tree |> Enum.at(7)
+
+    ascendants = table |> ascendants(leaf) |> Enum.map(& &1.ancestor.name)
+    assert ascendants == ["b", "a", "e"]
+  end
+
 end
