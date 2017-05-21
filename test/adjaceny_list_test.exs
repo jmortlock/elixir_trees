@@ -23,12 +23,19 @@ defmodule TreesTest do
         %{id: 7, parent_id: 3, name: "g"},
         %{id: 8, parent_id: 5, name: "h"},
       ],
+      tree_d: [
+        %{id: 1, parent_id: nil, name: "a"},
+        %{id: 2, parent_id: 1, name: "b"},
+        %{id: 3, parent_id: 1, name: "c"},
+        %{id: 4, parent_id: 2, name: "d"},
+      ]
     ]
   end
 
   setup _context do
     :ok
   end
+
 
   test "dfs from given node", context do
     tree = context[:tree_c]
